@@ -2,9 +2,9 @@ using Spectre.Console;
 
 namespace Phorg.Core;
 
-public static class FileStore
+public class FileStore(IPrompt Prompt)
 {
-    public static void Copy(IEnumerable<FileInfo> files, string destDir, bool dryrun = false)
+    public void Copy(IEnumerable<FileInfo> files, string destDir, bool dryrun = false)
     {
         if(!Directory.Exists(destDir))
         {
@@ -21,20 +21,27 @@ public static class FileStore
 
                 foreach (var file in files)
                 {
-                    task.Description = $"{destDir}/{file.Name}, {completed}/{files.Count()}";
                     Copy(file, destDir, dryrun);
-                    task.Increment(1);
                     completed++;
+                    task.Description = $"{destDir}/{file.Name}, {completed}/{files.Count()}";
+                    task.Increment(1);
                 }
             });
     }
 
-    public static void Copy(FileInfo file, string destDir, bool dryrun = false)
+    public void Copy(FileInfo file, string destDir, bool dryrun = false)
     {
         var dest = $"{destDir}/{file.Name}";
         if (!dryrun)
         {
-            File.Copy(file.FullName, dest, false);
+            try
+            {                
+                File.Copy(file.FullName, dest, false);
+            }
+            catch (Exception ex)
+            {
+                Prompt.Warn(ex.Message);
+            }
         }
     }
 }

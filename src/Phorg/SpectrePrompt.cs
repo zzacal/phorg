@@ -25,4 +25,9 @@ public class SpecterPrompt : IPrompt
     {
         AnsiConsole.MarkupLine($"[green]{message}[/]");
     }
+
+    public void Warn(string message)
+    {
+        AnsiConsole.MarkupLine($"[yellow]{message}[/]");
+    }
 }

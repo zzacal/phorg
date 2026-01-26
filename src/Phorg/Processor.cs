@@ -1,6 +1,6 @@
 namespace Phorg.Core;
 
-public class Processor(JobHelpers Jobber)
+public class Processor(JobHelpers Jobber, FileStore FileStore)
 {
     public int Start(string source, string destination, bool dryrun = false)
     {

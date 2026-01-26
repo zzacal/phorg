@@ -3,12 +3,16 @@ using Phorg.Core;
 
 var prompt = new SpecterPrompt();
 var jobber = new JobHelpers(prompt);
-var processor = new Processor(jobber);
+var fileStore = new FileStore(prompt);
+var processor = new Processor(jobber, fileStore);
 
-var source = "/Volumes/Transcend/DCIM/";
-var destination = "/Users/zzacal/Pictures";
+var source = prompt.Ask("Source", "/Volumes/Transcend/DCIM/");
+var destination = prompt.Ask("Destination","/Users/zzacal/Pictures");
 
-prompt.Say($"source: {source}");
+prompt.Say($"{source} -->> {destination}");
+
+prompt.Warn("Starting");
+
 var copied = processor.Start(source, destination, false);
 
 prompt.Success($"✓ Copied {copied} successfully");
