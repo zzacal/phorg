@@ -7,8 +7,12 @@ public class SpecterPrompt : IPrompt
 {
     public T Ask<T>(string question, T? def = default)
     {
-        var result = AnsiConsole.Ask<T>(question, def);
-        Console.WriteLine(result);
+        var result = def switch
+        {
+            T => AnsiConsole.Ask(question, def),
+            _ => AnsiConsole.Ask<T>(question)
+        };
+        
         return result;
     }
 

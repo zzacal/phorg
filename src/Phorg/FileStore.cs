@@ -21,7 +21,7 @@ public static class FileStore
 
                 foreach (var file in files)
                 {
-                    task.Description = $"{destDir}, {completed}/{files.Count()}";
+                    task.Description = $"{destDir}/{file.Name}, {completed}/{files.Count()}";
                     Copy(file, destDir, dryrun);
                     task.Increment(1);
                     completed++;
