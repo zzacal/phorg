@@ -34,10 +34,10 @@ AnsiConsole
                 job: job, 
                 completedEvent: (file) =>
                 {
-                    tasks[job.Key].Description = $"{completed++}/{jobCount} {job.Value.Folder}/{file}";
+                    tasks[job.Key].Description = $"{++completed}/{jobCount} {job.Value.Folder}/{file}";
                     tasks[job.Key].Increment(1);
                 },
-                dryrun: true
+                dryrun: false
             );
 
             copied += jobCopied;
