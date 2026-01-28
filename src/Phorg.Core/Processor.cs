@@ -2,16 +2,15 @@ namespace Phorg.Core;
 
 public class Processor(JobHelpers Jobber, FileStore FileStore)
 {
-    public int Start(string source, string destination, bool dryrun = false)
-    {
+    public Dictionary<string, Movables> Prepare(string source, string destination)
+    {        
         var files = Recon.GetFilesRecursively(source);
         var jobs = Jobber.CreateJobs(files, destination);
-
-        foreach (var job in jobs)
-        {
-            FileStore.Copy(job.Value.Sources, job.Value.Folder, dryrun);
-        }
-
-        return files.Length;
+        return jobs;
+    }
+    public int Start(KeyValuePair<string, Movables> job, Action<string> completedEvent, bool dryrun = false)
+    {
+        FileStore.Copy(job.Value.Sources, job.Value.Folder, completedEvent, dryrun);
+        return job.Value.Sources.Count();
     }
 }
