@@ -1,4 +1,4 @@
-namespace Phorg.Core;
+namespace Phorg;
 
 public record Movables(string Folder, List<FileInfo> Sources);
 

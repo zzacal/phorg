@@ -1,6 +1,6 @@
 namespace Phorg.Core;
 
-public class FileStore(IPrompt Prompt)
+public class FileStore()
 {
     public void Copy(IEnumerable<FileInfo> files, string destDir, Action<string> completedEvent, bool dryrun = false)
     {
@@ -21,18 +21,7 @@ public class FileStore(IPrompt Prompt)
         var dest = $"{destDir}/{file.Name}";
         if (!dryrun)
         {
-            try
-            {
-                File.Copy(file.FullName, dest, false);
-            }
-            catch (Exception ex)
-            {
-                Prompt.Warn(ex.Message);
-            }
-        }
-        else
-        {
-            Thread.Sleep(10);
+            File.Copy(file.FullName, dest, false);
         }
     }
 }

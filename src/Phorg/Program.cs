@@ -4,7 +4,7 @@ using Spectre.Console;
 
 var prompt = new SpecterPrompt();
 var jobber = new JobHelpers(prompt);
-var fileStore = new FileStore(prompt);
+var fileStore = new FileStore();
 var processor = new Processor(jobber, fileStore);
 
 var source = prompt.Ask("Source", "/Volumes/Transcend/DCIM/");
@@ -14,6 +14,7 @@ prompt.Say($"{source} -->> {destination}");
 
 prompt.Warn("Starting");
 var copied = 0;
+
 var jobs = processor.Prepare(source, destination);
 AnsiConsole
     .Progress()

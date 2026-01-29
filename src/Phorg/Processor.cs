@@ -1,4 +1,6 @@
-namespace Phorg.Core;
+using Phorg.Core;
+
+namespace Phorg;
 
 public class Processor(JobHelpers Jobber, FileStore FileStore)
 {

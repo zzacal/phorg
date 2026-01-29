@@ -1,4 +1,3 @@
-using Phorg.Core;
 using Spectre.Console;
 
 namespace Phorg;

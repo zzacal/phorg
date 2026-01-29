@@ -1,4 +1,4 @@
-namespace Phorg.Core;
+namespace Phorg;
 
 public interface IPrompt
 {
