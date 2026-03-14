@@ -7,8 +7,8 @@ var jobber = new JobHelpers(prompt);
 var fileStore = new FileStore();
 var processor = new Processor(jobber, fileStore);
 
-var source = prompt.Ask("Source", "/Volumes/Transcend/DCIM/");
-var destination = prompt.Ask("Destination","/Users/zzacal/Pictures");
+var source = prompt.BrowsePath("Source", "/");
+var destination = prompt.BrowsePath("Destination", "/");
 
 prompt.Say($"{source} -->> {destination}");
 
