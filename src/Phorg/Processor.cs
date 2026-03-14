@@ -10,9 +10,9 @@ public class Processor(JobHelpers Jobber, FileStore FileStore)
         var jobs = Jobber.CreateJobs(files, destination);
         return jobs;
     }
-    public int Start(KeyValuePair<string, Movables> job, Action<string> completedEvent, bool dryrun = false)
+    public int Start(KeyValuePair<string, Movables> job, Action<string> fileCopySucceededHandler, Action<string> fileCopyFailedHandler, bool dryrun = false)
     {
-        FileStore.Copy(job.Value.Sources, job.Value.Folder, completedEvent, dryrun);
+        FileStore.Copy(job.Value.Sources, job.Value.Folder, fileCopySucceededHandler, fileCopyFailedHandler, dryrun);
         return job.Value.Sources.Count();
     }
 }

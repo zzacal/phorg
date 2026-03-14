@@ -2,7 +2,7 @@ namespace Phorg.Core;
 
 public class FileStore()
 {
-    public void Copy(IEnumerable<FileInfo> files, string destDir, Action<string> completedEvent, bool dryrun = false)
+    public void Copy(IEnumerable<FileInfo> files, string destDir, Action<string> fileCopySucceededHandler, Action<string> fileCopyFailedHandler, bool dryrun = false)
     {
         if(!Directory.Exists(destDir))
         {
@@ -11,8 +11,15 @@ public class FileStore()
 
         foreach (var file in files)
         {
-            Copy(file, destDir, dryrun);
-            completedEvent(file.Name);
+            try
+            {
+                Copy(file, destDir, dryrun);
+                fileCopySucceededHandler(file.Name);
+            }
+            catch
+            {
+                fileCopyFailedHandler(file.Name);
+            }
         }        
     }
 
