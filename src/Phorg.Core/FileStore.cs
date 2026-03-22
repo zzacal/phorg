@@ -9,7 +9,7 @@ public class FileStore()
             Directory.CreateDirectory(destDir);
         }
 
-        foreach (var file in files)
+        Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = 2 }, file =>
         {
             try
             {
@@ -20,7 +20,7 @@ public class FileStore()
             {
                 fileCopyFailedHandler(file.Name);
             }
-        }        
+        });
     }
 
     public void Copy(FileInfo file, string destDir, bool dryrun = false)

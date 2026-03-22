@@ -35,13 +35,15 @@ AnsiConsole
                 job: job, 
                 fileCopySucceededHandler: (name) =>
                 {
-                    tasks[job.Key].Description = $"{++completed}/{jobCount} {job.Value.Folder}/{name}";
+                    var c = Interlocked.Increment(ref completed);
+                    tasks[job.Key].Description = $"{c}/{jobCount} {job.Value.Folder}/{name}";
                     tasks[job.Key].Increment(1);
                 },
                 fileCopyFailedHandler: (name) =>
                 {
                     prompt.Warn($"failed: {name}");
-                    tasks[job.Key].Description = $"{++completed}/{jobCount} {job.Value.Folder}/{name}";
+                    var c = Interlocked.Increment(ref completed);
+                    tasks[job.Key].Description = $"{c}/{jobCount} {job.Value.Folder}/{name}";
                     tasks[job.Key].Increment(1);
                 },
                 dryrun: false

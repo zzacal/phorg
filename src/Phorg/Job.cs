@@ -25,6 +25,6 @@ public class JobHelpers(IPrompt Prompt)
             targets[key].Sources.Add(file);
         }
 
-        return targets;
+        return targets.OrderBy(kv => kv.Key).ToDictionary(kv => kv.Key, kv => kv.Value);
     }
 }
