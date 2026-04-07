@@ -6,6 +6,7 @@ public class SpecterPrompt : IPrompt
 {
     private const string SelectCurrent = "→ [[Select this directory]]";
     private const string GoUp = "..";
+    private const string SwitchDrive = "↔ [[Switch Drive]]";
 
     public T Ask<T>(string question, T? def = default)
     {
@@ -28,6 +29,8 @@ public class SpecterPrompt : IPrompt
 
             if (Directory.GetParent(current) is not null)
                 choices.Add(GoUp);
+            else if (OperatingSystem.IsWindows())
+                choices.Add(SwitchDrive);
 
             try
             {
@@ -44,6 +47,20 @@ public class SpecterPrompt : IPrompt
 
             if (selection == SelectCurrent)
                 return current;
+
+            if (selection == SwitchDrive)
+            {
+                var drives = DriveInfo.GetDrives()
+                    .Where(d => d.IsReady)
+                    .Select(d => d.RootDirectory.FullName)
+                    .ToList();
+
+                current = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                        .Title("[blue]Select a drive:[/]")
+                        .AddChoices(drives));
+                continue;
+            }
 
             current = selection == GoUp
                 ? Directory.GetParent(current)!.FullName
