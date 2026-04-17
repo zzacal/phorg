@@ -1,3 +1,5 @@
+using Phorg.Core;
+
 namespace Phorg;
 
 public record Movables(string Folder, List<FileInfo> Sources);
@@ -6,25 +8,19 @@ public class JobHelpers(IPrompt Prompt)
 {
     public Dictionary<string, Movables> CreateJobs(FileInfo[] files, string basePath)
     {
-        var targets  = new Dictionary<string, Movables>();
+        var groups = Recon.GroupByDate(files);
+        var targets = new Dictionary<string, Movables>();
         string suffix = string.Empty;
-        
-        foreach (var file in files)
+
+        foreach (var (key, sources) in groups)
         {
-            var key = file.CreationTime.ToString("yyyyMMdd");
-            if(!targets.ContainsKey(key))
-            {
-                Prompt.Say($"Date: {key}");                
-                suffix = Prompt.Ask($"Suffix", suffix);
-
-                var folder = $"{basePath}/{$"{key} {suffix}".Trim()}";
-                targets[key] = new Movables(folder, new ());
-                Prompt.Say($"Folder: {folder}");
-            }
-
-            targets[key].Sources.Add(file);
+            Prompt.Say($"Date: {key}");
+            suffix = Prompt.Ask($"Suffix", suffix);
+            var folder = $"{basePath}/{$"{key} {suffix}".Trim()}";
+            Prompt.Say($"Folder: {folder}");
+            targets[key] = new Movables(folder, sources);
         }
 
-        return targets.OrderBy(kv => kv.Key).ToDictionary(kv => kv.Key, kv => kv.Value);
+        return targets;
     }
 }

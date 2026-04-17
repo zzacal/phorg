@@ -1,0 +1,13 @@
+---
+description: C# coding conventions for this project
+globs: **/*.cs
+---
+
+- Target net10.0. Implicit usings and nullable reference types are enabled — do not add `using System;` or similar redundant usings, and avoid `!` null-forgiving operators; handle nulls explicitly.
+- Prefer `record` for immutable data containers (see `Movables`).
+- Use primary constructors for simple dependency injection (see `Processor`, `JobHelpers`, `FileStore`).
+- Prefer `var` for local variables when the type is obvious from the right-hand side.
+- Use LINQ for collection transformations. Chain `.Select`, `.Where`, `.OrderBy` etc. rather than manual loops where readable.
+- Use `Parallel.ForEach` with explicit `MaxDegreeOfParallelism` for file I/O parallelism — do not use unbounded parallelism.
+- Use `Interlocked.Increment` for thread-safe counters in parallel loops.
+- Avoid `null!` and suppression operators; use pattern matching (`is not null`, `switch`) for null checks.

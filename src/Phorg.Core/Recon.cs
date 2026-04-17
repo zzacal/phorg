@@ -11,4 +11,10 @@ public static class Recon
         var infos = files.Select(x => new FileInfo(x));
         return subFiles.Concat(infos).ToArray();
     }
+
+    public static Dictionary<string, List<FileInfo>> GroupByDate(FileInfo[] files)
+        => files
+            .GroupBy(f => f.CreationTime.ToString("yyyyMMdd"))
+            .OrderBy(g => g.Key)
+            .ToDictionary(g => g.Key, g => g.ToList());
 }

@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Phorg.Avalonia.ViewModels"
+        x:Class="Phorg.Avalonia.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Phorg"
+        Width="700" Height="600"
+        MinWidth="500" MinHeight="400">
+
+  <DockPanel Margin="16">
+
+    <!-- Folder pickers -->
+    <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,12">
+
+      <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+        <TextBlock Grid.Column="0" Text="Source:" VerticalAlignment="Center" Width="80"/>
+        <TextBox   Grid.Column="1" Text="{Binding SourcePath}" IsReadOnly="True" Margin="4,0"/>
+        <Button    Grid.Column="2" Content="Browse" Command="{Binding BrowseSourceCommand}"/>
+      </Grid>
+
+      <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+        <TextBlock Grid.Column="0" Text="Destination:" VerticalAlignment="Center" Width="80"/>
+        <TextBox   Grid.Column="1" Text="{Binding DestPath}" IsReadOnly="True" Margin="4,0"/>
+        <Button    Grid.Column="2" Content="Browse" Command="{Binding BrowseDestCommand}"/>
+      </Grid>
+
+      <Button Content="Scan"
+              Command="{Binding ScanCommand}"
+              IsEnabled="{Binding !IsScanning}"
+              HorizontalAlignment="Left"/>
+    </StackPanel>
+
+    <!-- Action bar -->
+    <StackPanel DockPanel.Dock="Bottom" Spacing="8" Margin="0,12,0,0">
+      <Button Content="Copy Files"
+              Command="{Binding StartCopyCommand}"
+              IsEnabled="{Binding !IsCopying}"
+              HorizontalAlignment="Left"/>
+      <TextBlock Text="{Binding CopiedCount, StringFormat='Copied: {0}'}" />
+      <ScrollViewer Height="100">
+        <TextBlock Text="{Binding Log}" FontFamily="Monospace" TextWrapping="Wrap"/>
+      </ScrollViewer>
+    </StackPanel>
+
+    <!-- Date groups list -->
+    <ScrollViewer>
+      <ItemsControl ItemsSource="{Binding DateGroups}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:DateGroupViewModel">
+            <Grid ColumnDefinitions="120,Auto,*" Margin="0,4">
+              <TextBlock Grid.Column="0" Text="{Binding DateKey}" VerticalAlignment="Center"/>
+              <TextBlock Grid.Column="1" Text="{Binding FileCount, StringFormat='{}{0} files'}"
+                         VerticalAlignment="Center" Margin="8,0" Foreground="Gray"/>
+              <TextBox   Grid.Column="2" Text="{Binding Suffix}" PlaceholderText="Suffix (optional)"/>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+  </DockPanel>
+</Window>

@@ -1,0 +1,13 @@
+---
+description: Architecture and project structure rules
+globs: src/**/*.cs
+---
+
+- Two projects: `Phorg.Core` holds file system primitives (`Recon`, `FileStore`); `Phorg` holds CLI orchestration, job logic, and UI. Keep them separated — `Phorg.Core` must not reference `Phorg` or `Spectre.Console`.
+- All console/UI interaction goes through `IPrompt`. Never call `AnsiConsole` directly outside of `SpecterPrompt`.
+- `JobHelpers` groups files by `CreationTime` date into `Movables` records. The grouping key is `yyyyMMdd`. New grouping strategies should follow the same pattern: return `Dictionary<string, Movables>`.
+- `Processor` is the orchestration layer — it wires `Recon` → `JobHelpers` → `FileStore`. Keep it thin; business logic belongs in `JobHelpers` or `FileStore`.
+- File copy callbacks (`fileCopySucceededHandler`, `fileCopyFailedHandler`) are the contract between `FileStore` and the UI progress display. Preserve this pattern when adding new copy behaviors.
+- `SpecterPrompt.BrowsePath` is the canonical way to get directory paths from the user — do not fall back to raw string prompts for path input.
+- Must support mac, windows, and linux
+
