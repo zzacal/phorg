@@ -30,12 +30,48 @@
       <ItemsControl ItemsSource="{Binding DateGroups}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:DateGroupViewModel">
-            <Grid ColumnDefinitions="120,Auto,*" Margin="0,4">
-              <TextBlock Grid.Column="0" Text="{Binding DateKey}" VerticalAlignment="Center"/>
-              <TextBlock Grid.Column="1" Text="{Binding FileCount, StringFormat='{}{0} files'}"
-                         VerticalAlignment="Center" Margin="8,0" Foreground="Gray"/>
-              <TextBox   Grid.Column="2" Text="{Binding Suffix}" PlaceholderText="Suffix (optional)"/>
-            </Grid>
+            <StackPanel Margin="0,4,0,8">
+
+              <Grid ColumnDefinitions="120,Auto,*">
+                <TextBlock Grid.Column="0" Text="{Binding DateKey}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="{Binding FileCount, StringFormat='{}{0} files'}"
+                           VerticalAlignment="Center" Margin="8,0" Foreground="Gray"/>
+                <TextBox   Grid.Column="2" Text="{Binding Suffix}" PlaceholderText="Suffix (optional)"/>
+              </Grid>
+
+              <!-- Film strip -->
+              <Border Background="#1a1a1a" IsVisible="{Binding HasPreviews}"
+                      Margin="0,6,0,0" CornerRadius="3" ClipToBounds="True">
+                <Grid RowDefinitions="12,Auto,12">
+
+                  <!-- Top sprocket strip -->
+                  <Border Grid.Row="0" Background="#2a2a2a"/>
+
+                  <!-- Scrollable images -->
+                  <ScrollViewer Grid.Row="1"
+                                HorizontalScrollBarVisibility="Auto"
+                                VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Previews}">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <StackPanel Orientation="Horizontal" Spacing="2"/>
+                        </ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                          <Image Source="{Binding}" Height="80" Width="110" Stretch="UniformToFill"/>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </ScrollViewer>
+
+                  <!-- Bottom sprocket strip -->
+                  <Border Grid.Row="2" Background="#2a2a2a"/>
+
+                </Grid>
+              </Border>
+
+            </StackPanel>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>

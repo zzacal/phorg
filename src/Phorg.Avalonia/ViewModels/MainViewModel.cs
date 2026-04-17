@@ -74,7 +74,11 @@ public partial class MainViewModel : ObservableObject
             var groups = Recon.GroupByDate(files);
 
             foreach (var (key, sources) in groups)
-                DateGroups.Add(new DateGroupViewModel(key, sources));
+            {
+                var group = new DateGroupViewModel(key, sources);
+                DateGroups.Add(group);
+                _ = group.LoadPreviewsAsync();
+            }
 
             TotalCount = files.Length;
         }
