@@ -24,11 +24,16 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool _isCopying;
 
     partial void OnSourcePathChanged(string value) => ScanCommand.NotifyCanExecuteChanged();
-    partial void OnIsScanningChanged(bool value) => ScanCommand.NotifyCanExecuteChanged();
+    partial void OnIsScanningChanged(bool value) { ScanCommand.NotifyCanExecuteChanged(); OnPropertyChanged(nameof(HasProgress)); }
     partial void OnDestPathChanged(string value) => StartCopyCommand.NotifyCanExecuteChanged();
-    partial void OnIsCopyingChanged(bool value) => StartCopyCommand.NotifyCanExecuteChanged();
+    partial void OnIsCopyingChanged(bool value) { StartCopyCommand.NotifyCanExecuteChanged(); OnPropertyChanged(nameof(HasProgress)); }
     [ObservableProperty] private int _copiedCount;
-    [ObservableProperty] private string _log = string.Empty;
+    [ObservableProperty] private int _totalCount;
+    [ObservableProperty] private string _lastCopiedFile = string.Empty;
+
+    partial void OnTotalCountChanged(int value) => OnPropertyChanged(nameof(HasProgress));
+
+    public bool HasProgress => IsScanning || IsCopying || TotalCount > 0;
 
     public ObservableCollection<DateGroupViewModel> DateGroups { get; } = new();
 
@@ -60,7 +65,8 @@ public partial class MainViewModel : ObservableObject
 
         IsScanning = true;
         DateGroups.Clear();
-        Log = string.Empty;
+        TotalCount = 0;
+        CopiedCount = 0;
 
         try
         {
@@ -70,11 +76,11 @@ public partial class MainViewModel : ObservableObject
             foreach (var (key, sources) in groups)
                 DateGroups.Add(new DateGroupViewModel(key, sources));
 
-            AppendLog($"Found {files.Length} files across {groups.Count} date groups.");
+            TotalCount = files.Length;
         }
         catch (Exception ex)
         {
-            AppendLog($"Scan failed: {ex.Message}");
+            _ = ex;
         }
         finally
         {
@@ -91,7 +97,6 @@ public partial class MainViewModel : ObservableObject
 
         IsCopying = true;
         CopiedCount = 0;
-        Log = string.Empty;
 
         var store = new FileStore();
 
@@ -107,22 +112,17 @@ public partial class MainViewModel : ObservableObject
                     store.Copy(
                         group.Sources,
                         destDir,
-                        name => _dispatch(() =>
-                        {
-                            CopiedCount++;
-                            AppendLog($"Copied: {folderName}/{name}");
-                        }),
-                        name => _dispatch(() =>
-                            AppendLog($"Failed: {folderName}/{name}"))
+                        name => _dispatch(() => { CopiedCount++; LastCopiedFile = name; }),
+                        name => _dispatch(() => { CopiedCount++; LastCopiedFile = name; })
                     );
                 }
             });
 
-            AppendLog($"Done. {CopiedCount} files copied.");
+            await Dispatcher.UIThread.InvokeAsync(() => { });
         }
         catch (Exception ex)
         {
-            AppendLog($"Copy failed: {ex.Message}");
+            _ = ex;
         }
         finally
         {
@@ -145,6 +145,4 @@ public partial class MainViewModel : ObservableObject
         return results.Count > 0 ? results[0].TryGetLocalPath() : null;
     }
 
-    private void AppendLog(string message) =>
-        Log = string.IsNullOrEmpty(Log) ? message : $"{Log}\n{message}";
 }

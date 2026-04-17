@@ -17,7 +17,8 @@ public class MainViewModelTests
         Assert.False(vm.IsScanning);
         Assert.False(vm.IsCopying);
         Assert.Equal(0, vm.CopiedCount);
-        Assert.Equal(string.Empty, vm.Log);
+        Assert.Equal(0, vm.TotalCount);
+        Assert.False(vm.HasProgress);
     }
 
     [Fact]
@@ -60,7 +61,7 @@ public class MainViewModelTests
     }
 
     [Fact]
-    public async Task Scan_LogsFileCount()
+    public async Task Scan_SetsTotalCount()
     {
         var tempDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempDir);
@@ -72,7 +73,8 @@ public class MainViewModelTests
             vm.SourcePath = tempDir;
             await vm.ScanCommand.ExecuteAsync(null);
 
-            Assert.Contains("1 files", vm.Log);
+            Assert.Equal(1, vm.TotalCount);
+            Assert.True(vm.HasProgress);
         }
         finally
         {
@@ -121,6 +123,31 @@ public class MainViewModelTests
 
             Assert.Equal(1, vm.CopiedCount);
             Assert.True(File.Exists(Path.Combine(destDir, "20240715 Vacation", "photo.jpg")));
+        }
+        finally
+        {
+            if (Directory.Exists(srcDir)) Directory.Delete(srcDir, recursive: true);
+            if (Directory.Exists(destDir)) Directory.Delete(destDir, recursive: true);
+        }
+    }
+
+    [Fact]
+    public async Task StartCopy_SetsLastCopiedFile()
+    {
+        var srcDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        var destDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        Directory.CreateDirectory(srcDir);
+        try
+        {
+            File.WriteAllText(Path.Combine(srcDir, "photo.jpg"), "data");
+
+            var vm = Make();
+            vm.DestPath = destDir;
+            vm.DateGroups.Add(new DateGroupViewModel("20240715", [new FileInfo(Path.Combine(srcDir, "photo.jpg"))]));
+
+            await vm.StartCopyCommand.ExecuteAsync(null);
+
+            Assert.Equal("photo.jpg", vm.LastCopiedFile);
         }
         finally
         {
