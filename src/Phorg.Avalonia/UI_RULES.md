@@ -2,8 +2,8 @@
 
 ## Layout
 - Main padding: 16px. Section spacing: 12px. Inline spacing: 8px.
-- Use DockPanel for top/middle/bottom page regions.
-- Use Grid with fixed label column (120px), flexible input (`*`), optional action (Auto) for form rows.
+- Shared-row Grid (`ColumnDefinitions="Auto,*"`, explicit RowDefinitions): each row holds a button (left) and its paired content (right). This enforces vertical alignment structurally.
+- Row order: Browse Source | path, Browse Dest | path, Scan | (empty), * fill | date groups, Copy | counter, (empty) | log.
 - Wrap list content in ScrollViewer; keep the action bar always visible at bottom.
 
 ## Components

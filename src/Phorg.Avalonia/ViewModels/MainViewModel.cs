@@ -15,12 +15,18 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(Action<Action>? dispatch = null)
     {
         _dispatch = dispatch ?? (action => Dispatcher.UIThread.Post(action));
+        DateGroups.CollectionChanged += (_, _) => StartCopyCommand.NotifyCanExecuteChanged();
     }
 
     [ObservableProperty] private string _sourcePath = string.Empty;
     [ObservableProperty] private string _destPath = string.Empty;
     [ObservableProperty] private bool _isScanning;
     [ObservableProperty] private bool _isCopying;
+
+    partial void OnSourcePathChanged(string value) => ScanCommand.NotifyCanExecuteChanged();
+    partial void OnIsScanningChanged(bool value) => ScanCommand.NotifyCanExecuteChanged();
+    partial void OnDestPathChanged(string value) => StartCopyCommand.NotifyCanExecuteChanged();
+    partial void OnIsCopyingChanged(bool value) => StartCopyCommand.NotifyCanExecuteChanged();
     [ObservableProperty] private int _copiedCount;
     [ObservableProperty] private string _log = string.Empty;
 
@@ -47,7 +53,7 @@ public partial class MainViewModel : ObservableObject
             DestPath = path;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanScan))]
     private async Task Scan()
     {
         if (string.IsNullOrWhiteSpace(SourcePath)) return;
@@ -76,7 +82,9 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    [RelayCommand]
+    private bool CanScan() => !IsScanning && !string.IsNullOrWhiteSpace(SourcePath);
+
+    [RelayCommand(CanExecute = nameof(CanStartCopy))]
     private async Task StartCopy()
     {
         if (string.IsNullOrWhiteSpace(DestPath) || DateGroups.Count == 0) return;
@@ -121,6 +129,8 @@ public partial class MainViewModel : ObservableObject
             IsCopying = false;
         }
     }
+
+    private bool CanStartCopy() => !IsCopying && !string.IsNullOrWhiteSpace(DestPath) && DateGroups.Count > 0;
 
     private async Task<string?> PickFolder(string title)
     {
